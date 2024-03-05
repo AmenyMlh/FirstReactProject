@@ -1,17 +1,93 @@
 import Task from "../../components/task/Task";
 import TaskForm from "../../components/taskForm/TaskForm";
 import TaskList from "../../components/taskList/TaskList";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import * as api from "../../services/tasks3.service";
 
 function TaskPage() {
   const steps = ["Enter the title", "click on the button"];
-  const loading = false;
-  const [tasks, setTasks] = useState([
-    { _id: "1", title: "Learn Html", duration: "60" },
-    { _id: "2", title: "Learn React", duration: "120" },
-    { _id: "3", title: "Learn Angular", duration: "180" },
-  ]);
+  const [loading, setLoading] = useState(false);
+  const [tasks, setTasks] = useState([]);
+  const [error, setError] = useState(false);
+
   const [isVisible, setIsVisible] = useState(true);
+  async function fetchData() {
+    try {
+      setLoading(true);
+      setError(false);
+      const tasks = await api.fetchTasks();
+      setTasks(tasks);
+      setLoading(false);
+    } catch (e) {
+      setError(true);
+      setLoading(false);
+    }
+  }
+  const [searchValue, setSearchValue] = useState("");
+  // 2ème forme de useEffect
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        setError(false);
+        setLoading(true);
+        const tasks = await api.fetchTasks();
+        setTasks(tasks);
+        setLoading(false);
+      } catch (e) {
+        setError(true);
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, []);
+  /*function SayHello(value) {
+    alert("hello" + value);
+  }*/
+  // 3ème forme de useEffect
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     setLoading(true);
+  //     if (searchValue.length === 0) {
+  //       console.log("tasks empty");
+  //       setTasks([]);
+  //       setLoading(false);
+  //     } else {
+  //       const result = await api.fetchTasksByFilter(searchValue);
+  //       console.log("tasks from api : " + searchValue);
+  //       setTasks(result);
+  //       setLoading(false);
+  //     }
+  //   };
+  //   console.log("searchValue", searchValue);
+  //   fetchData();
+  // }, [searchValue]);
+
+  // 4ème forme de useEffect
+  // useEffect(() => {
+  //   let didCancel = false;
+  //   const fetchData = async () => {
+  //     setLoading(true);
+  //     if (!searchValue) {
+  //       setTasks([]);
+  //       setLoading(false);
+  //     } else {
+  //       const result = await api.fetchTasksByFilter(searchValue);
+  //       if (!didCancel) {
+  //         console.log("result: ", searchValue);
+
+  //         setTasks(result);
+  //         setLoading(false);
+  //       }
+  //     }
+  //   };
+  //   // console.log("useEffect:", searchValue)
+  //   fetchData();
+
+  //   return () => {
+  //     console.log("cleanup: ", searchValue);
+  //     didCancel = true;
+  //   };
+  // }, [searchValue]);
 
   /*function sayHello(value) {
     //alert("Hello " + value);
@@ -19,13 +95,14 @@ function TaskPage() {
   function handleVisibility() {
     setIsVisible(!isVisible);
   }
-  function addTask(title, duration) {
-    console.log("title, duration: ", title, duration);
+  async function addTask(title, duration) {
+    const newTask = await api.addTask({ title, duration });
+    /*console.log("title, duration: ", title, duration);
     const newTask = {
       _id: tasks.length + 1 + "",
       title: title,
       duration: duration,
-    };
+    };*/
     //setTasks([tasks.concat(newTask)]);
     setTasks([...tasks, newTask]);
   }
@@ -50,6 +127,14 @@ function TaskPage() {
       </ul>
       {/*<button onClick={handleVisibility}>Toggle visibility</button>*/}
       <button onClick={() => handleVisibility()}>Toggle visibility</button>
+      <input
+        type="text"
+        name="title"
+        value={searchValue}
+        onChange={(e) => {
+          setSearchValue(e.target.value);
+        }}
+      />
       <TaskForm addTask={addTask} />
       {/* {loading ? (
         <div>is loading</div>
@@ -60,6 +145,8 @@ function TaskPage() {
           <Task />
         </>
       )} */}
+
+      {error && <div>Error ... </div>}
       {loading && <div>is loading...</div>}
       {!loading && isVisible && (
         <TaskList

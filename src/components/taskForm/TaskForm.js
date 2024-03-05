@@ -1,5 +1,5 @@
 import "./taskForm.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function TaskForm(props) {
   const [title, setTitle] = useState("Learn");
@@ -16,27 +16,22 @@ function TaskForm(props) {
   function handleClick() {
     props.addTask(title, duration);
   }
+  useEffect(() => {
+    document.title = title;
+  });
 
   return (
-    <div className="task-form">
-      <form action="">
-        <div>
-          <input
-            type="text"
-            name="title"
-            value={title}
-            onChange={handleTitle}
-          />
-        </div>
-        <div>
-          <input
-            type="number"
-            name="duration"
-            value={duration}
-            onChange={handleDuration}
-          />
-        </div>
-        {/*<input type="text" name="title" onChange={(e) => handleTitle(e)} />*/}
+    <div className="taskForm">
+      <form action="" className="form">
+        <input type="text" name="title" onChange={handleTitle} />
+        <br />
+        <input
+          type="number"
+          name="duration"
+          value={duration}
+          onChange={(e) => setDuration(e.target.value)}
+        />
+        <br />
         <button type="button" onClick={handleClick}>
           Add a task
         </button>

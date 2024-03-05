@@ -1,60 +1,68 @@
-import "./task.css";
 import { useState } from "react";
+import "./task.css";
+import { Link, NavLink } from "react-router-dom";
 
 function Task(props) {
-  const [id, setId] = useState("Learn");
-  const [isEditing, setIsEditing] = useState(false);
+  // console.log(props);
+  const [toggle, setToggle] = useState(true);
   const [title, setTitle] = useState(props.title);
   const [duration, setDuration] = useState(props.duration);
 
-  function handleDelete() {
-    props.deleteTask(props._id);
+  function handleTitle(e) {
+    setTitle(e.target.value);
   }
-  function handleUpdate() {
-    console.log("Updated Title:", title);
-    console.log("Updated Duration:", duration);
-    props.updateTask(props._id, title, duration);
-    setIsEditing(false);
+  function handleClick(e) {
+    // console.log("update Click", title);
+    const task = {
+      _id: props._id,
+      title,
+      duration,
+    };
+    props.updateTask(task);
+    setToggle(true);
   }
   return (
     <div
       className={`task ${props.duration <= 60 ? "custom-task" : ""}`}
-      style={{ backgroundColor: "#e6d7ff" }}
+      style={{ backgroundColor: "cyan" }}
     >
-      {isEditing ? (
-        <div className="edit-mode">
+      {toggle ? (
+        <>
+          <Link to={"/tasks/" + props._id} className="title">
+            {props.title}
+          </Link>
+          <div className="title">{props.duration}</div>
+          {props.details && (
+            <div className="title">{props.details.difficulty}</div>
+          )}
+          <div className="actions">
+            <button onClick={() => props.deleteTask(props._id)}>delete</button>
+            <button onClick={() => setToggle(false)}>update</button>
+          </div>
+        </>
+      ) : (
+        <form action="" className="form">
           <input
             type="text"
+            name="title"
+            onChange={handleTitle}
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
           />
+          <br />
           <input
-            type="number"
+            type="text"
+            name="duration"
             value={duration}
             onChange={(e) => setDuration(e.target.value)}
           />
-          <button onClick={handleUpdate}>Update a Task</button>
-        </div>
-      ) : (
-        <div>
-          <div className="title">{props.title}</div>
-          <div className="title">{props.duration}</div>
-        </div>
+          <br />
+          <button type="button" onClick={handleClick}>
+            update task
+          </button>
+        </form>
       )}
-
-      {props.details && (
-        <>
-          <div className="title">{props.details.difficulty}</div>
-          <div className="title">{props.details.level}</div>
-        </>
-      )}
-      <div className="actions">
-        {!isEditing && <button onClick={handleDelete}>Delete</button>}
-        {!isEditing && (
-          <button onClick={() => setIsEditing(true)}>Update</button>
-        )}
-      </div>
     </div>
   );
 }
+
 export default Task;
