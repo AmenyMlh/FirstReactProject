@@ -1,17 +1,20 @@
 import { useState } from "react";
 import "./task.css";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, Navigate, useNavigate } from "react-router-dom";
+import { updateTask } from "../../services/tasks.service";
 
 function Task(props) {
   // console.log(props);
   const [toggle, setToggle] = useState(true);
   const [title, setTitle] = useState(props.title);
   const [duration, setDuration] = useState(props.duration);
+  const [titleToUpdate, setTitleToUpdate] = useState(props.title);
+  const [durationToUpdate, setDurationToUpdate] = useState(props.duration);
 
   function handleTitle(e) {
     setTitle(e.target.value);
   }
-  function handleClick(e) {
+  /*function handleClick(e) {
     // console.log("update Click", title);
     const task = {
       _id: props._id,
@@ -20,17 +23,30 @@ function Task(props) {
     };
     props.updateTask(task);
     setToggle(true);
-  }
+  }*/
+  /*function handleUpdate() {
+    props.updateTask(props._id, titleToUpdate, durationToUpdate);
+    setIsUpdatedMode(false);
+  }*/
+  const navigate = useNavigate();
+  const handleClick = () => {
+    if (props.duration > 50) {
+      navigate("/tasks/" + props._id);
+    }
+  };
   return (
     <div
       className={`task ${props.duration <= 60 ? "custom-task" : ""}`}
-      style={{ backgroundColor: "cyan" }}
+      style={{ backgroundColor: "#d692df" }}
     >
       {toggle ? (
         <>
-          <Link to={"/tasks/" + props._id} className="title">
+          {/*<Link to={"/tasks/" + props._id} className="title">*/}
+          {/*props.title*/}
+          {/*</Link>*/}
+          <div className="=title" onClick={handleClick}>
             {props.title}
-          </Link>
+          </div>
           <div className="title">{props.duration}</div>
           {props.details && (
             <div className="title">{props.details.difficulty}</div>

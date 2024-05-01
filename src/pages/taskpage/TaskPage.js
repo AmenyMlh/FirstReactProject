@@ -2,7 +2,7 @@ import Task from "../../components/task/Task";
 import TaskForm from "../../components/taskForm/TaskForm";
 import TaskList from "../../components/taskList/TaskList";
 import { useEffect, useState } from "react";
-import * as api from "../../services/tasks3.service";
+import * as api from "../../services/tasks.service";
 
 function TaskPage() {
   const steps = ["Enter the title", "click on the button"];
